@@ -1,5 +1,57 @@
-# Vue 3 + Vite
+# Mall Arauco App
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Sistema de gestión de ferias para Casa Emprende - Mall Arauco.
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+## 📋 Descripción
+
+Aplicación web para la gestión integral de ferias de emprendedores en centros comerciales. Permite administrar centros comerciales, emprendimientos, ferias, participaciones y pagos.
+
+## 🚀 Tecnologías
+
+- **Frontend**: Vue 3 + Vite
+- **Estado**: Pinia
+- **Routing**: Vue Router
+- **Backend**: Supabase (PostgreSQL + Storage)
+- **UI**: AdminLTE + Bootstrap 5
+
+## ✨ Características Principales
+
+- Gestión de centros comerciales y zonas
+- Registro y administración de emprendimientos
+- Planificación y control de ferias
+- Sistema de participaciones y pagos
+- Componentes UI reutilizables
+- Sistema de notificaciones global
+- Diseño responsive y minimalista
+
+## 📦 Instalación
+
+```bash
+# Clonar repositorio
+git clone <url-del-repositorio>
+cd mall-arauco-app
+
+# Instalar dependencias
+npm install
+
+# Configurar variables de entorno (.env)
+VITE_SUPABASE_URL=tu_supabase_url
+VITE_SUPABASE_ANON_KEY=tu_supabase_anon_key
+
+# Iniciar desarrollo
+npm run dev
+```
+
+## 🔐 Seguridad
+
+⚠️ **IMPORTANTE**: Nunca subir el archivo `.env` al repositorio. Las credenciales de Supabase deben mantenerse privadas.
+
+## 📝 Scripts
+
+- `npm run dev` - Servidor de desarrollo
+- `npm run build` - Build para producción
+- `npm run preview` - Preview del build
+
+---
+
+**Casa Emprende - Mall Arauco**
