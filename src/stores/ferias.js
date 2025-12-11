@@ -10,6 +10,11 @@ export const ESTADOS_FERIA = [
   "Cancelada",
 ];
 
+export const TIPOS_FERIA = {
+  FIJA: "fija",
+  ITINERANTE: "itinerante",
+};
+
 export const useFeriasStore = defineStore("ferias", () => {
   const ferias = ref([]);
   const loading = ref(false);
@@ -24,6 +29,31 @@ export const useFeriasStore = defineStore("ferias", () => {
     return ferias.value.filter(
       (f) =>
         !f.deleted_at && (f.estado === "En Curso" || f.estado === "Montada")
+    );
+  });
+
+  // Ferias por tipo
+  const feriasFijas = computed(() => {
+    return ferias.value.filter(
+      (f) => !f.deleted_at && f.tipo_feria === TIPOS_FERIA.FIJA
+    );
+  });
+
+  const feriasItinerantes = computed(() => {
+    return ferias.value.filter(
+      (f) => !f.deleted_at && f.tipo_feria === TIPOS_FERIA.ITINERANTE
+    );
+  });
+
+  const feriasFijasActivas = computed(() => {
+    return feriasFijas.value.filter(
+      (f) => f.estado === "En Curso" || f.estado === "Montada"
+    );
+  });
+
+  const feriasItinerantesActivas = computed(() => {
+    return feriasItinerantes.value.filter(
+      (f) => f.estado === "En Curso" || f.estado === "Montada"
     );
   });
 
@@ -67,6 +97,7 @@ export const useFeriasStore = defineStore("ferias", () => {
         .from("ferias")
         .insert({
           nombre: datos.nombre,
+          tipo_feria: datos.tipoFeria || TIPOS_FERIA.ITINERANTE,
           fecha_inicio: datos.fechaInicio,
           fecha_fin: datos.fechaFin,
           centro_comercial_id: datos.centroComercialId,
@@ -422,6 +453,66 @@ export const useFeriasStore = defineStore("ferias", () => {
     }
   }
 
+  // ===== FUNCIONES DE ASISTENCIA DE EMPRENDEDORES =====
+  async function cargarAsistenciasEmprendedores(feriaId, fecha = null) {
+    try {
+      // Primero obtener las participaciones de la feria
+      const { data: participaciones, error: errPart } = await supabase
+        .from("participaciones")
+        .select("id")
+        .eq("feria_id", feriaId);
+
+      if (errPart) throw errPart;
+
+      if (!participaciones || participaciones.length === 0) {
+        return [];
+      }
+
+      const participacionIds = participaciones.map((p) => p.id);
+
+      // Luego obtener las asistencias de esas participaciones
+      let query = supabase
+        .from("asistencia_emprendedores")
+        .select("*")
+        .in("participacion_id", participacionIds);
+
+      if (fecha) {
+        query = query.eq("fecha", fecha);
+      }
+
+      const { data, error: err } = await query;
+
+      if (err) throw err;
+      return data || [];
+    } catch (err) {
+      console.error("Error cargando asistencias de emprendedores:", err);
+      throw err;
+    }
+  }
+
+  async function guardarAsistenciasEmprendedores(asistencias) {
+    try {
+      const { error: err } = await supabase
+        .from("asistencia_emprendedores")
+        .upsert(
+          asistencias.map((a) => ({
+            participacion_id: a.participacion_id,
+            fecha: a.fecha,
+            llego_a_tiempo: a.llego_a_tiempo,
+            observaciones: a.observaciones || null,
+          })),
+          {
+            onConflict: "participacion_id,fecha",
+          }
+        );
+
+      if (err) throw err;
+    } catch (err) {
+      console.error("Error guardando asistencias múltiples:", err);
+      throw err;
+    }
+  }
+
   // Cargar datos al inicializar
   cargarFerias();
 
@@ -431,6 +522,10 @@ export const useFeriasStore = defineStore("ferias", () => {
     error,
     totalFerias,
     feriasActivas,
+    feriasFijas,
+    feriasItinerantes,
+    feriasFijasActivas,
+    feriasItinerantesActivas,
     cargarFerias,
     agregarFeria,
     actualizarFeria,
@@ -445,6 +540,9 @@ export const useFeriasStore = defineStore("ferias", () => {
     cargarAsistencias,
     guardarAsistencia,
     guardarAsistenciasMultiples,
+    cargarAsistenciasEmprendedores,
+    guardarAsistenciasEmprendedores,
     ESTADOS_FERIA,
+    TIPOS_FERIA,
   };
 });

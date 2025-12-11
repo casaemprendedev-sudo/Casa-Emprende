@@ -7,7 +7,7 @@
           <div class="flex-grow-1">
             <h5 class="modal-title mb-1">{{ fair.nombre }}</h5>
             <div class="text-muted small">
-              {{ getMallName(fair.centro_comercial_id) }} • 
+              {{ getMallName(fair.centro_comercial_id) }} •
               {{ formatDate(fair.fecha_inicio) }} - {{ formatDate(fair.fecha_fin) }}
             </div>
           </div>
@@ -23,10 +23,7 @@
               <div class="stat-label">Ocupación</div>
               <div class="stat-value">{{ currentParticipations.length }} / {{ fair.limite_puestos }}</div>
               <div class="stat-bar">
-                <div 
-                  class="stat-bar-fill" 
-                  :style="{ width: occupancyPercentage + '%' }"
-                ></div>
+                <div class="stat-bar-fill" :style="{ width: occupancyPercentage + '%' }"></div>
               </div>
             </div>
 
@@ -54,11 +51,8 @@
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h6 class="mb-0">Emprendimientos</h6>
             <div>
-              <button
-                @click="showAddForm = true"
-                class="btn btn-sm btn-outline-primary mr-2"
-                :disabled="currentParticipations.length >= fair.limite_puestos"
-              >
+              <button @click="showAddForm = true" class="btn btn-sm btn-outline-primary mr-2"
+                :disabled="currentParticipations.length >= fair.limite_puestos">
                 <i class="fas fa-plus mr-1"></i>
                 Asignar
               </button>
@@ -75,18 +69,10 @@
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <label class="form-label">Emprendimiento <span class="text-danger">*</span></label>
-                  <select
-                    v-model="form.emprendimientoId"
-                    @change="onBusinessSelect"
-                    class="form-control form-control-sm"
-                    required
-                  >
+                  <select v-model="form.emprendimientoId" @change="onBusinessSelect"
+                    class="form-control form-control-sm" required>
                     <option value="">Seleccionar...</option>
-                    <option
-                      v-for="business in availableBusinesses"
-                      :key="business.id"
-                      :value="business.id"
-                    >
+                    <option v-for="business in availableBusinesses" :key="business.id" :value="business.id">
                       {{ business.nombre_emprendimiento }} - {{ business.nombre_emprendedor }}
                     </option>
                   </select>
@@ -94,24 +80,39 @@
 
                 <div class="col-md-3 mb-3">
                   <label class="form-label">Puesto</label>
-                  <input
-                    v-model="form.numeroPuesto"
-                    type="text"
-                    class="form-control form-control-sm"
-                    readonly
-                  />
+                  <input v-model="form.numeroPuesto" type="text" class="form-control form-control-sm" readonly />
                 </div>
 
                 <div class="col-md-3 mb-3">
                   <label class="form-label">Descuento (%)</label>
-                  <input
-                    v-model.number="form.descuento"
-                    type="number"
-                    class="form-control form-control-sm"
-                    min="0"
-                    max="100"
-                    @input="calculatePrices"
-                  />
+                  <input v-model.number="form.descuento" type="number" class="form-control form-control-sm" min="0"
+                    max="100" @input="calculatePrices" />
+                </div>
+              </div>
+
+              <!-- Mobiliario Section -->
+              <div class="mb-3">
+                <label class="form-label d-block mb-2">
+                  <i class="fas fa-chair mr-1"></i>
+                  Mobiliario
+                </label>
+                <div class="row">
+                  <div v-for="item in itemsMobiliario" :key="item.id" class="col-md-6 mb-2">
+                    <div class="d-flex align-items-center">
+                      <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" :id="'mob-' + item.id"
+                          v-model="form.mobiliarioSeleccionado[item.id]" @change="calculatePrices" />
+                        <label class="custom-control-label" :for="'mob-' + item.id">
+                          {{ item.nombre }}
+                          <small class="text-muted">(+${{ formatNumber(item.precio) }})</small>
+                        </label>
+                      </div>
+                      <input v-if="form.mobiliarioSeleccionado[item.id]"
+                        v-model.number="form.mobiliarioCantidad[item.id]" type="number"
+                        class="form-control form-control-sm ml-2" style="width: 70px;" min="1" max="10"
+                        @input="calculatePrices" />
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -124,6 +125,10 @@
                 <div class="price-row" v-if="form.descuento > 0">
                   <span>Descuento ({{ form.descuento }}%):</span>
                   <span class="text-danger">-${{ formatNumber(priceCalculation.discount) }}</span>
+                </div>
+                <div class="price-row" v-if="priceCalculation.mobiliarioCargo > 0">
+                  <span>Mobiliario:</span>
+                  <span class="text-primary">+${{ formatNumber(priceCalculation.mobiliarioCargo) }}</span>
                 </div>
                 <div class="price-row">
                   <span>IVA (19%):</span>
@@ -153,7 +158,10 @@
                 <tr>
                   <th>Puesto</th>
                   <th>Emprendimiento</th>
-                  <th>Contacto</th>
+                  <th class="text-end">Precio Base</th>
+                  <th class="text-end">Descuento</th>
+                  <th>Mobiliario</th>
+                  <th class="text-end">IVA</th>
                   <th class="text-end">Total</th>
                   <th class="text-end">Pagado</th>
                   <th class="text-center">Estado</th>
@@ -162,7 +170,7 @@
               </thead>
               <tbody>
                 <tr v-if="currentParticipations.length === 0">
-                  <td colspan="7" class="text-center text-muted py-4">
+                  <td colspan="10" class="text-center text-muted py-4">
                     No hay emprendimientos asignados
                   </td>
                 </tr>
@@ -174,24 +182,49 @@
                     <div class="fw-500">{{ getBusinessName(participation.emprendimiento_id) }}</div>
                     <small class="text-muted">{{ getBusinessOwner(participation.emprendimiento_id) }}</small>
                   </td>
-                  <td>
-                    <small class="text-muted">{{ getBusinessContact(participation.emprendimiento_id) }}</small>
+                  <td class="text-end">
+                    <small>${{ formatNumber(participation.precio_base) }}</small>
                   </td>
-                  <td class="text-end">${{ formatNumber(participation.monto_final) }}</td>
-                  <td class="text-end text-success">${{ formatNumber(participation.monto_pagado) }}</td>
+                  <td class="text-end">
+                    <small class="text-danger" v-if="participation.descuento_monto > 0">
+                      -${{ formatNumber(participation.descuento_monto) }}
+                      <span class="text-muted">({{ participation.descuento_porcentaje }}%)</span>
+                    </small>
+                    <small class="text-muted" v-else>-</small>
+                  </td>
+                  <td>
+                    <div v-if="participation.mobiliario && participation.mobiliario.length > 0">
+                      <small class="text-muted d-block" v-for="mob in participation.mobiliario" :key="mob.id">
+                        <i class="fas fa-chair text-primary" style="font-size: 0.7rem;"></i>
+                        {{ mob.item?.nombre }} ({{ mob.cantidad }})
+                      </small>
+                      <small class="text-primary fw-500 d-block mt-1">
+                        +${{ formatNumber(participation.cargo_mobiliario) }}
+                      </small>
+                    </div>
+                    <small class="text-muted" v-else>-</small>
+                  </td>
+                  <td class="text-end">
+                    <small>${{ formatNumber(participation.iva) }}</small>
+                  </td>
+                  <td class="text-end fw-500">
+                    ${{ formatNumber(participation.monto_final) }}
+                  </td>
+                  <td class="text-end text-success">
+                    ${{ formatNumber(participation.monto_pagado) }}
+                  </td>
                   <td class="text-center">
                     <span class="status-badge" :class="'status-' + participation.estado_pago.toLowerCase()">
                       {{ participation.estado_pago }}
                     </span>
                   </td>
                   <td class="text-center">
-                    <button
-                      @click="$emit('manage-payments', participation)"
-                      class="btn btn-sm btn-link text-primary p-0"
-                      title="Gestionar Pagos"
-                    >
-                      <i class="fas fa-dollar-sign"></i>
-                    </button>
+                    <div class="btn-group">
+                      <button @click="openManageParticipation(participation)"
+                        class="btn btn-sm btn-link text-primary p-0" title="Gestionar Participación">
+                        <i class="fas fa-cog"></i>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               </tbody>
@@ -209,10 +242,20 @@
     </div>
   </div>
   <div v-if="visible" class="modal-backdrop fade show"></div>
+
+  <!-- Modal Gestión Completa de Participación -->
+  <ParticipationManagementModal :visible="showManageModal" :participation="selectedParticipation" :fairId="fair?.id"
+    :mallId="fair?.centro_comercial_id" :fairData="fairDataForManagement"
+    :entrepreneurName="getBusinessName(selectedParticipation?.emprendimiento_id)" :furniture="itemsMobiliario"
+    @close="closeManageParticipation" @updated="handleParticipationUpdated" />
 </template>
 
 <script setup>
-import { ref, computed, defineProps, defineEmits, watch } from 'vue';
+import { ref, computed, defineProps, defineEmits, watch, onMounted } from 'vue';
+import { useParticipacionesStore } from '../../stores/participaciones';
+import ParticipationManagementModal from './ParticipationManagementModal.vue';
+
+const participacionesStore = useParticipacionesStore();
 
 const props = defineProps({
   visible: {
@@ -240,19 +283,21 @@ const props = defineProps({
 const emit = defineEmits(['close', 'add-participation', 'manage-payments', 'open-balance']);
 
 const showAddForm = ref(false);
+const showManageModal = ref(false);
+const selectedParticipation = ref(null);
 const isSubmitting = ref(false);
 
 const form = ref({
   emprendimientoId: '',
   numeroPuesto: '',
   descuento: 0,
-  mobiliario: {
-    estanteNegro: false,
-    perchero: false,
-    repisaSobreMesa: false,
-    silla: false,
-  },
+  mobiliarioSeleccionado: {},
+  mobiliarioCantidad: {},
 });
+
+
+
+const itemsMobiliario = computed(() => participacionesStore.itemsMobiliario);
 
 const currentParticipations = computed(() => {
   if (!props.fair) return [];
@@ -274,21 +319,56 @@ const totalIncome = computed(() => {
 });
 
 const priceCalculation = computed(() => {
-  if (!props.fair) return { basePrice: 0, discount: 0, tax: 0, total: 0 };
+  if (!props.fair) return { basePrice: 0, discount: 0, mobiliarioCargo: 0, tax: 0, total: 0 };
 
   const basePrice = props.fair.precio_base_puesto || 0;
-  const discountAmount = (basePrice * form.value.descuento) / 100;
-  const subtotal = basePrice - discountAmount;
+  const discount = (basePrice * form.value.descuento) / 100;
+
+  // Calcular cargo de mobiliario
+  let mobiliarioCargo = 0;
+  Object.keys(form.value.mobiliarioSeleccionado).forEach(itemId => {
+    if (form.value.mobiliarioSeleccionado[itemId]) {
+      const item = itemsMobiliario.value.find(m => m.id === itemId);
+      if (item) {
+        const cantidad = form.value.mobiliarioCantidad[itemId] || 1;
+        mobiliarioCargo += item.precio * cantidad;
+      }
+    }
+  });
+
+  const subtotal = basePrice - discount + mobiliarioCargo;
   const tax = subtotal * 0.19;
   const total = subtotal + tax;
 
   return {
     basePrice,
-    discount: discountAmount,
+    discount,
+    mobiliarioCargo,
     tax,
     total,
   };
 });
+
+// Fair data for management modal
+const fairDataForManagement = computed(() => {
+  if (!props.fair) return null;
+
+  const fairDate = new Date(props.fair.fecha_inicio);
+  const year = fairDate.getFullYear();
+  const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+  const month = monthNames[fairDate.getMonth()];
+
+  return {
+    year,
+    mallName: getMallName(props.fair.centro_comercial_id),
+    fairName: props.fair.nombre,
+    month,
+    precio_base: props.fair.precio_base_puesto
+  };
+});
+
+
 
 function onBusinessSelect() {
   const nextNumber = currentParticipations.value.length + 1;
@@ -299,8 +379,36 @@ function calculatePrices() {
   // Trigger reactivity
 }
 
+
+
+function openManageParticipation(participation) {
+  selectedParticipation.value = participation;
+  showManageModal.value = true;
+}
+
+function closeManageParticipation() {
+  showManageModal.value = false;
+  selectedParticipation.value = null;
+}
+
+function handleParticipationUpdated() {
+  // Recargar participaciones
+  emit('add-participation'); // Esto trigger la recarga en el componente padre
+}
+
 function handleSubmit() {
   isSubmitting.value = true;
+
+  // Preparar items de mobiliario seleccionados
+  const mobiliarioItems = [];
+  Object.keys(form.value.mobiliarioSeleccionado).forEach(itemId => {
+    if (form.value.mobiliarioSeleccionado[itemId]) {
+      mobiliarioItems.push({
+        itemId: itemId,
+        cantidad: form.value.mobiliarioCantidad[itemId] || 1
+      });
+    }
+  });
 
   const participationData = {
     feriaId: props.fair.id,
@@ -310,12 +418,12 @@ function handleSubmit() {
     descuento: form.value.descuento,
     descuentoMonto: priceCalculation.value.discount,
     subtotal: props.fair.precio_base_puesto - priceCalculation.value.discount,
-    cargoMobiliario: 0,
-    precioNeto: props.fair.precio_base_puesto - priceCalculation.value.discount,
+    cargoMobiliario: priceCalculation.value.mobiliarioCargo,
+    precioNeto: props.fair.precio_base_puesto - priceCalculation.value.discount + priceCalculation.value.mobiliarioCargo,
     iva: priceCalculation.value.tax,
     total: priceCalculation.value.total,
     montoFinal: priceCalculation.value.total,
-    mobiliarioItems: [],
+    mobiliarioItems: mobiliarioItems,
   };
 
   emit('add-participation', participationData);
@@ -332,12 +440,8 @@ function cancelForm() {
     emprendimientoId: '',
     numeroPuesto: '',
     descuento: 0,
-    mobiliario: {
-      estanteNegro: false,
-      perchero: false,
-      repisaSobreMesa: false,
-      silla: false,
-    },
+    mobiliarioSeleccionado: {},
+    mobiliarioCantidad: {},
   };
 }
 
@@ -361,6 +465,13 @@ function getBusinessContact(businessId) {
   return business?.telefono || business?.email || '-';
 }
 
+function getMobiliarioText(participation) {
+  if (!participation.mobiliario || participation.mobiliario.length === 0) return '-';
+  return participation.mobiliario
+    .map(m => `${m.item?.nombre} (${m.cantidad})`)
+    .join(', ');
+}
+
 function formatDate(dateString) {
   if (!dateString) return 'N/A';
   const date = new Date(dateString);
@@ -370,6 +481,10 @@ function formatDate(dateString) {
 function formatNumber(value) {
   return new Intl.NumberFormat('es-CL').format(value || 0);
 }
+
+onMounted(async () => {
+  await participacionesStore.cargarItemsMobiliario();
+});
 
 watch(
   () => props.visible,
@@ -559,6 +674,66 @@ watch(
 .btn-link {
   text-decoration: none;
 }
+
+/* Custom Checkbox Styles */
+.custom-control {
+  position: relative;
+  display: block;
+  min-height: 1.5rem;
+  padding-left: 1.5rem;
+}
+
+.custom-control-input {
+  position: absolute;
+  left: 0;
+  z-index: -1;
+  width: 1rem;
+  height: 1.25rem;
+  opacity: 0;
+}
+
+.custom-control-input:checked~.custom-control-label::before {
+  color: #fff;
+  border-color: #007bff;
+  background-color: #007bff;
+}
+
+.custom-control-label {
+  position: relative;
+  margin-bottom: 0;
+  vertical-align: top;
+  cursor: pointer;
+}
+
+.custom-control-label::before {
+  position: absolute;
+  top: 0.25rem;
+  left: -1.5rem;
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  pointer-events: none;
+  content: "";
+  background-color: #fff;
+  border: 1px solid #adb5bd;
+  border-radius: 0.25rem;
+}
+
+.custom-control-label::after {
+  position: absolute;
+  top: 0.25rem;
+  left: -1.5rem;
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  content: "";
+  background: no-repeat 50% / 50% 50%;
+}
+
+.custom-checkbox .custom-control-input:checked~.custom-control-label::after {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3e%3cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26l2.974 2.99L8 2.193z'/%3e%3c/svg%3e");
+}
+
 
 .btn-link:hover {
   text-decoration: none;

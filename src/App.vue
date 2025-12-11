@@ -93,6 +93,48 @@ import ToastContainer from './components/common/ToastContainer.vue'
                 <p>Coordinadores</p>
               </router-link>
             </li>
+
+            <!-- Sección Documentos -->
+            <li class="nav-header">DOCUMENTOS</li>
+            <li class="nav-item">
+              <router-link to="/facturas" class="nav-link">
+                <i class="nav-icon fas fa-file-invoice-dollar"></i>
+                <p>Facturas</p>
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link to="/ordenes-compra" class="nav-link">
+                <i class="nav-icon fas fa-file-invoice"></i>
+                <p>Órdenes de Compra</p>
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link to="/documentos" class="nav-link">
+                <i class="nav-icon fas fa-folder-open"></i>
+                <p>Archivos Drive</p>
+              </router-link>
+            </li>
+
+            <!-- Sección Reportes -->
+            <li class="nav-header">REPORTES</li>
+            <li class="nav-item">
+              <router-link to="/reporte-financiero" class="nav-link">
+                <i class="nav-icon fas fa-chart-bar"></i>
+                <p>Reporte Financiero</p>
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link to="/reporte-participaciones" class="nav-link">
+                <i class="nav-icon fas fa-chart-pie"></i>
+                <p>Participaciones</p>
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link to="/reporte-centros" class="nav-link">
+                <i class="nav-icon fas fa-chart-area"></i>
+                <p>Por Centro</p>
+              </router-link>
+            </li>
           </ul>
         </nav>
       </div>

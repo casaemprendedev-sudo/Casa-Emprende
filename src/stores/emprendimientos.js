@@ -93,6 +93,13 @@ export const useEmprendimientosStore = defineStore("emprendimientos", () => {
           descripcion: datos.descripcion || null,
           instagram: datos.instagram || null,
           activo: true,
+          usar_datos_dueno: datos.usarDatosDueno !== false,
+          facturacion_rut: datos.facturacion?.rut || null,
+          facturacion_razon_social: datos.facturacion?.razonSocial || null,
+          facturacion_giro: datos.facturacion?.giro || null,
+          facturacion_direccion: datos.facturacion?.direccion || null,
+          facturacion_comuna: datos.facturacion?.comuna || null,
+          facturacion_telefono: datos.facturacion?.telefono || null,
         })
         .select(
           `
@@ -164,6 +171,13 @@ export const useEmprendimientosStore = defineStore("emprendimientos", () => {
           descripcion: datos.descripcion,
           instagram: datos.instagram,
           activo: datos.activo,
+          usar_datos_dueno: datos.usarDatosDueno !== false,
+          facturacion_rut: datos.facturacion?.rut || null,
+          facturacion_razon_social: datos.facturacion?.razonSocial || null,
+          facturacion_giro: datos.facturacion?.giro || null,
+          facturacion_direccion: datos.facturacion?.direccion || null,
+          facturacion_comuna: datos.facturacion?.comuna || null,
+          facturacion_telefono: datos.facturacion?.telefono || null,
         })
         .eq("id", id);
 

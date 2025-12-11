@@ -44,6 +44,7 @@ export const useParticipacionesStore = defineStore("participaciones", () => {
           emprendimiento:emprendimientos(id, nombre_emprendimiento, nombre_emprendedor),
           mobiliario:participacion_mobiliario(
             id,
+            item_mobiliario_id,
             cantidad,
             item:items_mobiliario(id, nombre, precio)
           )

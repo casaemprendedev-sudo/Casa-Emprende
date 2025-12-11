@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Script para crear estructura de carpetas en Google Drive
+# Este es solo un recordatorio - debes crear las carpetas manualmente en drive.google.com
+
+echo "=============================================="
+echo "  CREAR ESTRUCTURA DE CARPETAS EN DRIVE"
+echo "=============================================="
+echo ""
+echo "Ve a: https://drive.google.com/drive/folders/15NZ1SMABN2dfKGNctnAOIrj6PQic5Y-j"
+echo ""
+echo "Crea esta estructura de carpetas:"
+echo ""
+echo "Casa Emprende Docs/ (ya existe - ID: 15NZ1SMABN2dfKGNctnAOIrj6PQic5Y-j)"
+echo "├── 2025/"
+echo "│   └── Parque Arauco/"
+echo "│       └── Feria Ejemplo - Diciembre/"
+echo "│           ├── Facturas/"
+echo "│           └── Ordenes de Compra/"
+echo ""
+echo "Pasos:"
+echo "1. Abre el link arriba"
+echo "2. Click 'Nuevo' → 'Nueva carpeta'"
+echo "3. Nombre: '2025'"
+echo "4. Entra a la carpeta 2025"
+echo "5. Crea carpeta: 'Parque Arauco' (o el nombre de tu mall)"
+echo "6. Entra a 'Parque Arauco'"
+echo "7. Crea carpeta: 'Feria Ejemplo - Diciembre'"
+echo "8. Entra a esa carpeta"
+echo "9. Crea dos carpetas: 'Facturas' y 'Ordenes de Compra'"
+echo ""
+echo "¡Listo! Ahora prueba subir un archivo desde la app"
+echo "=============================================="
