@@ -4,7 +4,12 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error("Missing Supabase environment variables");
+  console.error("Missing Supabase environment variables");
+  console.log("VITE_SUPABASE_URL:", supabaseUrl ? "defined" : "undefined");
+  console.log("VITE_SUPABASE_ANON_KEY:", supabaseAnonKey ? "defined" : "undefined");
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+const supabase = createClient(supabaseUrl || "", supabaseAnonKey || "");
+
+export { supabase };
+export default supabase;
